@@ -1,6 +1,10 @@
 # ansible-docker 
 
-> Ansible Playbook for automatic installation and configuration of Docker and Docker-compose on RedHat Enterprise Linux 7
+> Ansible Playbook for automatic installation and configuration of:
+>  - Docker
+>  - Docker-compose
+>  - Java-openJDK-1.8
+> on RedHat Enterprise Linux 7
 
 > Custom role for installing docker only using official RH EL7 repository - `docker-rhel`
 
