@@ -1,0 +1,16 @@
+# roles/common/tasks/redhat.yml
+- name: Ensure git is present
+  yum:
+    name: git
+    state: present
+
+- name: Ensure vim is present
+  yum:
+    name: vim
+    state: present
+
+- name: Ensure mc is present
+  yum:
+    name: mc
+    state: present
+

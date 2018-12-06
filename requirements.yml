@@ -1,0 +1,5 @@
+# Install geerlingguy.docker role from the Ansible Galaxy
+- src: geerlingguy.docker
+
+# Install geerlingguy.java role from the Ansible Galaxy
+- src: geerlingguy.java
