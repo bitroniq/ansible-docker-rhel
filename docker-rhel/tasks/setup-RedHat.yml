@@ -1,8 +1,14 @@
 ---
-- name: Enable RHEL extras repository
-  rhsm_repository:
-    name: rhui-REGION-rhel-server-extras
+- name: Configure optional repo
+  ini_file:
+    dest: '/etc/yum.repos.d/redhat-rhui.repo'
+    section: 'rhui-REGION-rhel-server-optional'
+    option: enabled
+    value: 1
 
-- name: Enable RHEL optional repository
-  rhsm_repository:
-    name: rhui-REGION-rhel-server-optional
+- name: Configure extras repo
+  ini_file:
+    dest: '/etc/yum.repos.d/redhat-rhui.repo'
+    section: 'rhui-REGION-rhel-server-extras'
+    option: enabled
+    value: 1
