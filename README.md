@@ -1,15 +1,17 @@
 # ansible-docker 
 
-> Ansible Playbook for automatic installation and configuration of Docker and Docker-compose
+> Ansible Playbook for automatic installation and configuration of Docker and Docker-compose on RedHat Enterprise Linux 7
+
+> Custom role for installing docker only using official RH EL7 repository - `docker-rhel`
 
 ## Main features:
  
 * ✔ Automatic intallation of requirements
-* ✔ Automatic installation of missing packagesa
+* ✔ Automatic installation of missing packages
 * ✔ Automatic update of system packages
-* ✔ Ubuntu 18.04+ compatibility
-* ✔ CentOS 7+ compatibility
-* ✔ Automatic Docker and Docker Compose installation in latest version
+* ✔ RedHat EL 7+ compatibility
+* ✔ Automatic Docker installation
+* ✔ Automatic Docker Compose installation in latest version (from GitHub)
 
 ## Prerequisites
 
@@ -24,12 +26,12 @@ Having all Prerequisites set up please follow the next steps to configure enviro
 
 ### Clone repository
 ```
-git clone https://github.com/bitroniq/ansible-docker.git
+git clone https://github.com/bitroniq/ansible-docker-rhel.git
 ```
 
 ### Install Ansible Galaxy Roles
 
-Before Ansible Playbook can be played on target host (Ubuntu 18.04+ or CentOS 7+), some roles from Ansible Galaxy must be installed.
+Before Ansible Playbook can be played on target host, some roles from Ansible Galaxy must be installed.
 
 ```
 ansible-galaxy install -r requirements.yml
@@ -124,41 +126,58 @@ $ sudo chmod g+rwx "$HOME/.docker" -R
 
 The repository contains the following files and directories:
 ```
-├── docker-centos-7
-│   └── Dockerfile
-├── docker-ubuntu-18.04
-│   ├── Dockerfile
-│   ├── initctl_faker
-│   └── README.md
-├── common
-│   └── tasks
-│       ├── debian.yml
-│       ├── main.yml
-│       └── redhat.yml
-├── inventory.yml
-├── README.md
-├── requirements.yml
-├── site.yml
-├── tests
-│   ├── inventory
-│   ├── test.yml
-│   └── vagrant.yml
-├── vagrant-multi
-│   └── Vagrantfile
-└── vagrant-single
-    └── Vagrantfile
+.
+├ common
+│   └ tasks
+│       ├ debian.yml
+│       ├ main.yml
+│       └ redhat.yml
+├ docker-rhel
+│   ├ defaults
+│   │   └ main.yml
+│   ├ handlers
+│   │   └ main.yml
+│   └ tasks
+│       ├ docker-compose.yml
+│       ├ docker-users.yml
+│       ├ main.yml
+│       └ setup-RedHat.yml
+├ inventory.yml
+├ LICENSE
+├ README.md
+├ requirements.yml
+├ site.yml
+├ test-nodes
+│   ├ docker-centos-7
+│   │   └ Dockerfile
+│   ├ docker-ubuntu-18.04
+│   │   ├ Dockerfile
+│   │   ├ initctl_faker
+│   │   └ README.md
+│   ├ vagrant-multi
+│   │   └ Vagrantfile
+│   └ vagrant-single
+│       └ Vagrantfile
+└ tests
+    ├ inventory
+        ├ test.yml
+	    └ vagrant.yml
+
 ```
 
-* `docker-centos-7` - used for building docker container with CentOS 7 to test the Playbook
-* `docker-ubuntu-18.04` - used for building docker container with Ubuntu 18.04 to test the Playbook
-* `common` - the main role for installing packages
+* `common` - role for installing basic packages (git, vim, mc)
+* `docker-rhel` - role for installing docker and docker-compose
 * `inventory.yml` - inventory file where the target hosts should be defined
+* `LICENSE`
 * `README.md` - This readme file
 * `requirements.yml` - List of Ansible Galaxy roles
 * `site.yml` - Main Playbook that lists the roles to be played on target host
+* `test-nodes`
+  - `docker-centos-7` - used for building docker container with CentOS 7 to test the Playbook
+  - `docker-ubuntu-18.04` - used for building docker container with Ubuntu 18.04 to test the Playbook
+  - `vagrant-multi` - Vagrantfile that will run many different Linux versions to test the Playbook
+  - `vagrant-single` - Vagrantfile that will run single machine
 * `tests` - Playbook that is used by Vagrant to test the playbooks on different Linux versions
-* `vagrant-multi` - Vagrantfile that will run many different Linux versions to test the Playbook
-* `vagrant-single` - Vagrantfile that will run single machine
 
 
 ### How it works
@@ -176,33 +195,31 @@ This is needed to determine the target OS version etc.
 
 Then the roles will be played:
 ```
-  roles:
-    # Play role common with base packages
-    - role: common
+ roles:
+   # Play role common with base packages
+   - role: common
 
-    # Play role geerlingguy.docker to install docker and docker-compose
-    - role: geerlingguy.docker
+   # Play role docker-rhel to install docker and docker-compose
+   - role: docker-rhel
+     when: "ansible_os_family == 'RedHat'"
 
-    # Play role geerlingguy.java to install java for pycharm
-    - role: geerlingguy.java
-      when: "ansible_os_family == 'Debian'"
-      java_packages:
-        - openjdk-8-jdk
-
-    # Play role oefenweb.pycharm to install pycharm
-    - role: oefenweb.pycharm
+   # Play role geerlingguy.java to install java
+   - role: geerlingguy.java
+     when: "ansible_os_family == 'RedHat'"
+     java_packages:
+       - java-1.8.0-openjdk
 ```
 * `common` will install the basic packages:
   - name: Ensure git is present
   - name: Ensure vim is present
   - name: Ensure mc is present
-* `geerlingguy.docker` - Ansible Galaxy role to install latest Docker - maintained by the community
+* `docker-rhel` - role to install latest Docker - maintained by the community
 * `geerlingguy.java` - Ansible Galaxy role to install Java - maintained by the community
 
 ---
 ## Contributing
 
-1. Fork it (<https://github.com/bitroniq/ansible-docker/fork>)
+1. Fork it (<https://github.com/bitroniq/ansible-docker-rhel/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
@@ -212,5 +229,4 @@ Then the roles will be played:
 
 * https://galaxy.ansible.com/geerlingguy/java
 * https://galaxy.ansible.com/geerlingguy/docker
-* https://galaxy.ansible.com/oefenweb/pycharm
 * https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
