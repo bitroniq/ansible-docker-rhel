@@ -2,6 +2,9 @@
 - include_tasks: setup-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
+- include_tasks: docker-users.yml
+  when: docker_users
+
 - name: Install Docker.
   package:
     name: "{{ docker_package }}"
@@ -20,5 +23,3 @@
 - include_tasks: docker-compose.yml
   when: docker_install_compose
 
-- include_tasks: docker-users.yml
-  when: docker_users
