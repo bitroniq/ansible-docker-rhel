@@ -11,12 +11,12 @@
 
   pre_tasks:
     - name: Update packages
-      raw: bash -c "[[ -f /usr/bin/yum ]] && yum update || apt-get -qqy update"
+      raw: bash -c "[[ -f /usr/bin/yum ]] && yum --assumeyes update || apt-get -qqy update"
       register: output
       changed_when: output.stdout != "\r\n"
 
     - name: Install python for Ansible
-      raw: bash -c "[[ -f /usr/bin/yum ]] && yum install python || apt-get -qqy install python-minimal"
+      raw: bash -c "[[ -f /usr/bin/yum ]] && yum --assumeyes install python || apt-get -qqy install python-minimal"
       register: output
       changed_when: output.stdout != "\r\n"
 
